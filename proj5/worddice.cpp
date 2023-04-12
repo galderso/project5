@@ -17,13 +17,19 @@ class Node{
 	friend ostream& operator<<(ostream& os, const Node& node);
 	int id; //node id (ncrements as nodes are added)
 	Node_Type type; //type of node it is (source, sink, word or dice)
-	vector<bool> letters; //length 26 with letters contained in word set to 1
+	bool letters[26]; //length 26 with letters contained in word set to 1
 	int visited; //for BFS
 	vector<Edge *> adj; //adjacency list
 	Edge *backedge; //previous edge for Edmonds-Karp
 };
 
 Node::Node(int id, Node_Type type, string word){
+	for(int i = 0; i < 26; i++){ //sets letters to false initially
+		this->letters[i] = false;
+	}
+	for(int i = 0; i < word.size(); i++){ //sets all letters included in the given word to true
+		this->letters['A' + word[i]] = true;
+	}
 }
 
 class Edge{
@@ -62,8 +68,20 @@ class Graph{
 	}
 	bool BFS(); //breadth first search for Edmonds-Karp
 	bool spell_word(); //runs Edmonds-Karp to see if we can spell the word
-	void delete_word_from_graph(); //deletes the word nodes but leaves the dice nodes
+	void delete_word_from_graph(){ //deletes the word nodes but leaves the dice nodes
+	}
 	void print_node_order(string word); //print spelling Ids and word
+	void print_graph(){
+		for(int i = 0; i < nodes.size(); i++){
+			string content = "";
+			for(int j = 0; j < 26; j++){
+				if(nodes[i]->letters[j]){
+					content += ('A'+j);
+				}
+			}
+			cout <<"Node ID: "<< nodes[i]->id <<" || Content: " << content <<  endl;
+		}
+	}
 };
 
 Graph::Graph(){
@@ -92,8 +110,12 @@ int main(int argc, char* argv[]){
 			graph->add_word_to_graph(string() + line[i], nodeID + wordLength);
 		}
 		//Nodes are all added
+		//Do stuff
+		graph->print_graph();
+		//Delete Word
+		graph->delete_word_from_graph();
 	}
+	
 
-
-
+	return 0;
 }
