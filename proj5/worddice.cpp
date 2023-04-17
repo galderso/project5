@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -10,17 +11,17 @@ typedef enum{SOURCE, SINK, WORD, DICE} Node_Type;
 class Edge; //declare so it can be used in Node class
 
 class Node{
- public:
-	Node(int id, Node_Type type, string word = ""); //constructor for nodes
-	~Node(); //default destructor
-	bool has_letter(char c);
-	friend ostream& operator<<(ostream& os, const Node& node);
-	int id; //node id (ncrements as nodes are added)
-	Node_Type type; //type of node it is (source, sink, word or dice)
-	bool letters[26]; //length 26 with letters contained in word set to 1
-	int visited; //for BFS
-	vector<Edge *> adj; //adjacency list
-	Edge *backedge; //previous edge for Edmonds-Karp
+	public:
+		Node(int id, Node_Type type, string word = ""); //constructor for nodes
+		~Node(); //default destructor
+		bool has_letter(char c);
+		friend ostream& operator<<(ostream& os, const Node& node);
+		int id; //node id (ncrements as nodes are added)
+		Node_Type type; //type of node it is (source, sink, word or dice)
+		bool letters[26]; //length 26 with letters contained in word set to 1
+		int visited; //for BFS
+		vector<Edge *> adj; //adjacency list
+		Edge *backedge; //previous edge for Edmonds-Karp
 };
 
 Node::Node(int id, Node_Type type, string word){
@@ -33,15 +34,15 @@ Node::Node(int id, Node_Type type, string word){
 }
 
 class Edge{
- public:
-	//from -> to
-	class Node *to; //node edge is pointing to
-	class Node *from; //node edge is pointing from
-	Edge(class Node *to, class Node *from, bool reverse_edge = false); //constructor for edges
-	~Edge(){}; //default destructor
-	Edge *reverse; //edge going the other way
-	int original; //original weight per edge
-	int residual; //allows for updated weighting during Edmonds-Karp
+	public:
+		//from -> to
+		class Node *to; //node edge is pointing to
+		class Node *from; //node edge is pointing from
+		Edge(class Node *to, class Node *from, bool reverse_edge = false); //constructor for edges
+		~Edge(){}; //default destructor
+		Edge *reverse; //edge going the other way
+		int original; //original weight per edge
+		int residual; //allows for updated weighting during Edmonds-Karp
 };
 
 Edge::Edge(class Node *to, class Node *from, bool reverse_edge){
@@ -49,46 +50,66 @@ Edge::Edge(class Node *to, class Node *from, bool reverse_edge){
 }
 
 class Graph{
- public:
-	Graph();//constructor initializes graph with source node
-	~Graph(); //destructor to deallocate memory of graph
-	Node *source; //not necessary but makes code more readable
-	Node *sink;
-	vector<Node *> nodes; //holds the nodes
-	vector<int> spellingIds; //order of flow to spell word
-	int min_nodes; //min number of dice nodes
-	string word;
-	void add_dice_to_graph(string die, int id){ //add dice nodes to graph
-		Node *dice = new Node(id, DICE, die);
-		nodes.push_back(dice);
-	}
-	void add_word_to_graph(string word, int id){ //add word (letter) nodes to graph
-		Node *letter = new Node(id, WORD, word);
-		nodes.push_back(letter);
-	}
-	bool BFS(); //breadth first search for Edmonds-Karp
-	bool spell_word(); //runs Edmonds-Karp to see if we can spell the word
-	void delete_word_from_graph(){ //deletes the word nodes but leaves the dice nodes
-	}
-	void print_node_order(string word); //print spelling Ids and word
-	void print_graph(){
-		for(int i = 0; i < nodes.size(); i++){
-			string content = "";
-			for(int j = 0; j < 26; j++){
-				if(nodes[i]->letters[j]){
-					content += ('A'+j);
-				}
-			}
-			cout <<"Node ID: "<< nodes[i]->id <<" || Content: " << content <<  endl;
+	public:
+		Graph();//constructor initializes graph with source node
+		~Graph(); //destructor to deallocate memory of graph
+		Node *source; //not necessary but makes code more readable
+		Node *sink;
+		vector<Node *> nodes; //holds the nodes
+		vector<int> spellingIds; //order of flow to spell word
+		int min_nodes; //min number of dice nodes
+		string word;
+		void add_dice_to_graph(string die, int id){ //add dice nodes to graph
+			Node *dice = new Node(id, DICE, die);
+			nodes.push_back(dice);
 		}
-	}
+		void add_word_to_graph(string word, int id){ //add word (letter) nodes to graph
+			Node *letter = new Node(id, WORD, word);
+			nodes.push_back(letter);
+		}
+		bool BFS(); //breadth first search for Edmonds-Karp
+		bool spell_word(); //runs Edmonds-Karp to see if we can spell the word
+		void delete_word_from_graph(){ //deletes the word nodes but leaves the dice nodes
+		}
+		void print_node_order(string word); //print spelling Ids and word
+		void print_graph(){
+			for(int i = 0; i < nodes.size(); i++){
+				string content = "";
+				for(int j = 0; j < 26; j++){
+					if(nodes[i]->letters[j]){
+						content += ('A'+j);
+					}
+				}
+				cout <<"Node ID: "<< nodes[i]->id <<" || Content: " << content <<  endl;
+			}
+		}
 };
 
 Graph::Graph(){
 	source = new Node(0, SOURCE);
 	nodes.push_back(source);
 }
+void createEdge(Node *n1,Node *n2){
+	Edge *edge1;
+	Edge *edge2;
 
+
+	edge2->to=n1;
+	edge2->from=n2;
+	edge2->reverse=edge1;
+	edge2->original=0;
+	edge2->residual=1;
+	n2->adj.push_back(edge2);
+	edge1->to=n2;
+	edge1->from=n1;
+	edge1->reverse=edge2;
+	edge1->original=1;
+	edge1->residual=0;
+	n1->adj.push_back(edge1);
+
+
+
+}
 int main(int argc, char* argv[]){
 	ifstream file;
 	string line;
@@ -101,6 +122,18 @@ int main(int argc, char* argv[]){
 		nodeID++;
 		graph->add_dice_to_graph(line, nodeID);
 	}
+	//creates edges from source to dice
+
+	graph->min_nodes =nodeID+1;
+	Node *n1=graph->nodes[0];
+	for(int i =1;i<graph->min_nodes;i++){
+		Node *n2=graph->nodes[i];
+
+		createEdge(n1,n2);
+
+
+	}
+
 	file.close();
 	file.open(argv[2]); //words file
 	while(getline(file, line)){
@@ -109,13 +142,46 @@ int main(int argc, char* argv[]){
 			wordLength++;
 			graph->add_word_to_graph(string() + line[i], nodeID + wordLength);
 		}
+
+
+
+		//creates edges between dice and word based on the letters
+		for(int i=1;i<graph->min_nodes;i++){
+			Node *n1=graph->nodes[i];
+			for(int k=graph->min_nodes;k<graph->nodes.size()-1;k++){
+				Node *n2=graph->nodes[k];
+				for(int j =0;j<26;j++){
+					if(n2->letters[j]==true && n1->letters[j]==true){
+						createEdge(n1,n2);
+					}
+
+
+				}
+
+			}
+
+
+		}
+
+
+
+		//creates edges from word to sink
+		Node *n2=graph->nodes[graph->nodes.size()-1];
+		for(int i =graph->min_nodes;i<graph->nodes.size()-1;i++){
+			Node *n1=graph->nodes[i];
+
+			createEdge(n1,n2);
+
+
+		}
+
 		//Nodes are all added
 		//Do stuff
 		graph->print_graph();
 		//Delete Word
 		graph->delete_word_from_graph();
 	}
-	
+
 
 	return 0;
 }
