@@ -1,4 +1,4 @@
-
+#include<list>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -184,4 +184,52 @@ int main(int argc, char* argv[]){
 
 
 	return 0;
+}
+bool Graph::BFS(){
+	
+	list<Node*>queue;
+	
+
+	//(nodes.backedge).assign(nodes.size(),NULL);	
+		for(int i=0;i<nodes.size();i++){
+		nodes[i]->backedge=NULL;
+		nodes[i]->visited=0;
+		}
+
+	Node *n =nodes[0];
+	queue.push_back(n);
+
+	while(queue.size()){
+	queue.front();
+	queue.pop_front();
+
+
+	for(int i =0;i<n->adj.size();i++){
+		if(n->adj[i]->to->visited==0 &&n->adj[i]->original==1){
+		n->adj[i]->to->backedge=n->adj[i];
+		n->adj[i]->to->visited=1;
+		queue.push_back(n->adj[i]->to);
+
+
+		}
+	}
+	}
+
+
+
+if(n==nodes[nodes.size()-1]){
+return true;
+}else{
+
+return false;
+}
+
+}
+
+
+bool Graph::spell_word(){
+
+}
+void Graph::delete_word_from_graph(){
+
 }
