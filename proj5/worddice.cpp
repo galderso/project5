@@ -31,6 +31,8 @@ Node::Node(int id, Node_Type type, string word){
 	for(int i = 0; i < word.size(); i++){ //sets all letters included in the given word to true
 		this->letters['A' + word[i]] = true;
 	}
+	this->type = type;
+	this->id = id;
 }
 
 class Edge{
@@ -59,19 +61,32 @@ class Graph{
 		vector<int> spellingIds; //order of flow to spell word
 		int min_nodes; //min number of dice nodes
 		string word;
+		
 		void add_dice_to_graph(string die, int id){ //add dice nodes to graph
 			Node *dice = new Node(id, DICE, die);
 			nodes.push_back(dice);
 		}
+		
 		void add_word_to_graph(string word, int id){ //add word (letter) nodes to graph
 			Node *letter = new Node(id, WORD, word);
 			nodes.push_back(letter);
 		}
+		
 		bool BFS(); //breadth first search for Edmonds-Karp
+		
 		bool spell_word(); //runs Edmonds-Karp to see if we can spell the word
+		
 		void delete_word_from_graph(){ //deletes the word nodes but leaves the dice nodes
+			for(int i = nodes.size()-1; i >=0; i--){ //Search from end of the list to front of the list
+				if(nodes[i]->type == WORD){
+					nodes[i]->adj.clear();
+					nodes.erase(nodes.begin() + i);
+				}
+			}
 		}
+		
 		void print_node_order(string word); //print spelling Ids and word
+		
 		void print_graph(){
 			for(int i = 0; i < nodes.size(); i++){
 				string content = "";
@@ -89,6 +104,7 @@ Graph::Graph(){
 	source = new Node(0, SOURCE);
 	nodes.push_back(source);
 }
+
 void createEdge(Node *n1,Node *n2){
 	Edge *edge1;
 	Edge *edge2;
@@ -243,6 +259,7 @@ Node *n=nodes.back();
 
 
 }
+
 n=nodes.back();
 
 for(int i =min_nodes;i<nodes.size()-1;i++){
@@ -262,5 +279,4 @@ for(int i =min_nodes;i<nodes.size()-1;i++){
 return true;
 }
 void Graph::delete_word_from_graph(){
-
 }
