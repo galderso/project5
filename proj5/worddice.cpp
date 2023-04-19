@@ -167,8 +167,8 @@ int main(int argc, char* argv[]){
 			for(int k=graph->min_nodes;k<graph->nodes.size()-1;k++){
 				Node *n2=graph->nodes[k];
 				for(int j =0;j<26;j++){
-					if(n2->letters[j]==true && n1->letters[j]==true){
-						createEdge(n1,n2);
+					if(graph->nodes[k]->letters[j]==true && n1->letters[j]==true){
+						createEdge(n1,graph->nodes[k]);
 					}
 
 
@@ -212,7 +212,7 @@ bool Graph::BFS(){
 		nodes[i]->visited=0;
 		}
 
-	Node *n =nodes[0];
+	Node *n =nodes.front();
 	queue.push_back(n);
 
 	while(queue.size()){
@@ -233,7 +233,7 @@ bool Graph::BFS(){
 
 
 
-if(n==nodes[nodes.size()-1]){
+if(n==nodes.back()){
 return true;
 }else{
 
@@ -278,5 +278,5 @@ for(int i =min_nodes;i<nodes.size()-1;i++){
 }
 return true;
 }
-void Graph::delete_word_from_graph(){
-}
+//void Graph::delete_word_from_graph(){
+//}
