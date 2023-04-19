@@ -29,7 +29,7 @@ Node::Node(int id, Node_Type type, string word){
 		this->letters[i] = false;
 	}
 	for(int i = 0; i < word.size(); i++){ //sets all letters included in the given word to true
-		this->letters['A' + word[i]] = true;
+		this->letters[word[i] - 'A'] = true;
 	}
 	this->type = type;
 	this->id = id;
@@ -40,16 +40,16 @@ class Edge{
 		//from -> to
 		class Node *to; //node edge is pointing to
 		class Node *from; //node edge is pointing from
-		Edge(class Node *to, class Node *from, bool reverse_edge = false); //constructor for edges
+	//	Edge(class Node *to, class Node *from, bool reverse_edge = false); //constructor for edges
 		~Edge(){}; //default destructor
 		Edge *reverse; //edge going the other way
 		int original; //original weight per edge
 		int residual; //allows for updated weighting during Edmonds-Karp
 };
 
-Edge::Edge(class Node *to, class Node *from, bool reverse_edge){
+//Edge::Edge(class Node *to, class Node *from, bool reverse_edge){
 
-}
+//}
 
 class Graph{
 	public:
@@ -72,13 +72,18 @@ class Graph{
 			nodes.push_back(letter);
 		}
 		
+		void add_sink_to_graph(int id){
+			sink = new Node(id, SINK);
+			nodes.push_back(sink);
+		}
+
 		bool BFS(); //breadth first search for Edmonds-Karp
 		
 		bool spell_word(); //runs Edmonds-Karp to see if we can spell the word
 		
 		void delete_word_from_graph(){ //deletes the word nodes but leaves the dice nodes
 			for(int i = nodes.size()-1; i >=0; i--){ //Search from end of the list to front of the list
-				if(nodes[i]->type == WORD){
+				if(nodes[i]->type == WORD || nodes[i]->type == SINK){
 					nodes[i]->adj.clear();
 					nodes.erase(nodes.begin() + i);
 				}
@@ -92,7 +97,7 @@ class Graph{
 				string content = "";
 				for(int j = 0; j < 26; j++){
 					if(nodes[i]->letters[j]){
-						content += ('A'+j);
+						content.push_back('A'+j);
 					}
 				}
 				cout <<"Node ID: "<< nodes[i]->id <<" || Content: " << content <<  endl;
@@ -106,8 +111,8 @@ Graph::Graph(){
 }
 
 void createEdge(Node *n1,Node *n2){
-	Edge *edge1;
-	Edge *edge2;
+	Edge *edge1 = new Edge();
+	Edge *edge2 = new Edge();
 
 
 	edge2->to=n1;
@@ -158,8 +163,7 @@ int main(int argc, char* argv[]){
 			wordLength++;
 			graph->add_word_to_graph(string() + line[i], nodeID + wordLength);
 		}
-
-
+		graph->add_sink_to_graph(nodeID + wordLength + 1);
 
 		//creates edges between dice and word based on the letters
 		for(int i=1;i<graph->min_nodes;i++){
@@ -201,6 +205,7 @@ int main(int argc, char* argv[]){
 
 	return 0;
 }
+
 bool Graph::BFS(){
 	
 	list<Node*>queue;
@@ -244,9 +249,9 @@ return false;
 
 
 bool Graph::spell_word(){
-	Node*n;
-while(BFS()){
-Node *n=nodes.back();
+Node* n;
+	while(BFS()){
+	n=nodes.back();
 
 	while(n->type!=SOURCE){
 	n->backedge->original=0;
@@ -280,3 +285,4 @@ return true;
 }
 //void Graph::delete_word_from_graph(){
 //}
+
