@@ -228,7 +228,38 @@ return false;
 
 
 bool Graph::spell_word(){
+	Node*n;
+while(BFS()){
+Node *n=nodes.back();
 
+	while(n->type!=SOURCE){
+	n->backedge->original=0;
+	n->backedge->residual=1;
+	n->backedge->reverse->original=1;
+	n->backedge->reverse->residual=0;
+	
+	n=n->backedge->from;
+	}
+
+
+}
+n=nodes.back();
+
+for(int i =min_nodes;i<nodes.size()-1;i++){
+	n=nodes[i];
+	for(int j =0;j<n->adj.size();j++){
+		if(n->adj[j]->reverse->residual!=0){
+		if(n->adj[j]->to->type==DICE&&n->adj[j]->original==1){
+			spellingIds.push_back(n->adj[j]->to->id);
+		}
+		}else{
+			return false;
+		}
+
+	}
+
+}
+return true;
 }
 void Graph::delete_word_from_graph(){
 
