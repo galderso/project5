@@ -233,10 +233,9 @@ bool Graph::BFS(){
 
 
 
-if(n==nodes.back()){
-return true;
+if(n==nodes[nodes.size()-1]){
+    return true
 }else{
-
 return false;
 }
 
