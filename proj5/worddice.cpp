@@ -137,13 +137,13 @@ void createEdge(Node *n1,Node *n2){
 	edge2->residual=1;
 	n2->adj.push_back(edge2);
 	edge1->to=n2;
-    edge1->from=n1;
-    edge1->reverse=edge2;
-    edge1->original=1;
-    edge1->residual=0;
-n1->adj.push_back(edge1);
-	
-	
+	edge1->from=n1;
+	edge1->reverse=edge2;
+	edge1->original=1;
+	edge1->residual=0;
+	n1->adj.push_back(edge1);
+
+
 
 
 }
@@ -160,7 +160,7 @@ int main(int argc, char* argv[]){
 	//creates edges from source to dice
 
 	graph->min_nodes =nodeID+1;
-	Node *n1=graph->nodes[0];
+	Node *n1=graph->nodes.front();
 	for(int i =1;i<graph->min_nodes;i++){
 		Node *n2=graph->nodes[i];
 
@@ -201,7 +201,7 @@ int main(int argc, char* argv[]){
 
 
 		//creates edges from word to sink
-		Node *n2=graph->nodes[graph->nodes.size()-1];
+		Node *n2=graph->nodes.back();
 		for(int i =graph->min_nodes;i<graph->nodes.size()-1;i++){
 			Node *n1=graph->nodes[i];
 
@@ -242,19 +242,19 @@ bool Graph::BFS(){
 		queue.pop_front();
 
 		for(int i =0;i<n->adj.size();i++){
-	        if(n==nodes.back()){
-            return true;
-        }else{
+			if(n==nodes.back()){
+				return true;
+			}else{
+				if(n->adj[i]->to->visited==0){ 
+					if(n->adj[i]->original==1){
 
-			if(n->adj[i]->to->visited==0 &&n->adj[i]->original==1){
+						n->adj[i]->to->backedge=n->adj[i];
+						n->adj[i]->to->visited=1;
+						queue.push_back(n->adj[i]->to);
 
-				n->adj[i]->to->backedge=n->adj[i];
-				n->adj[i]->to->visited=1;
-				queue.push_back(n->adj[i]->to);
-
-
+					}
+				}
 			}
-		}
 		}
 	}
 
@@ -268,8 +268,8 @@ bool Graph::BFS(){
 
 bool Graph::spell_word(){
 	Node* n;
-    spellingIds.clear();
-	
+	spellingIds.clear();
+
 	cout << "BFS: " << BFS() << endl; //error testing
 	while(BFS()){
 		n=nodes.back();
@@ -286,7 +286,7 @@ bool Graph::spell_word(){
 
 	}
 
-    n=nodes.back();
+	n=nodes.back();
 
 
 	for(int i = 0; i < n->adj.size(); i++) {
@@ -297,13 +297,13 @@ bool Graph::spell_word(){
 	for(int k =min_nodes;k<nodes.size()-1;k++){		
 		n=nodes[k];
 		for(int j =0;j<n->adj.size();j++){
-	         if(n->adj[j]->original==1){
+			if(n->adj[j]->original==1){
 				if(n->adj[j]->to->type==DICE){
 					spellingIds.push_back((n->adj[j]->to->id)-1);
 				}
-			 }
-			 }
+			}
+		}
 	}
 	return true;
 }
- 
+
