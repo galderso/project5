@@ -1,3 +1,6 @@
+
+
+#include <queue>
 #include<list>
 #include <iostream>
 #include <fstream>
@@ -40,7 +43,7 @@ class Edge{
 		//from -> to
 		class Node *to; //node edge is pointing to
 		class Node *from; //node edge is pointing from
-	//	Edge(class Node *to, class Node *from, bool reverse_edge = false); //constructor for edges
+		//	Edge(class Node *to, class Node *from, bool reverse_edge = false); //constructor for edges
 		~Edge(){}; //default destructor
 		Edge *reverse; //edge going the other way
 		int original; //original weight per edge
@@ -61,26 +64,26 @@ class Graph{
 		vector<int> spellingIds; //order of flow to spell word
 		int min_nodes; //min number of dice nodes
 		string word;
-		
+
 		void add_dice_to_graph(string die, int id){ //add dice nodes to graph
 			Node *dice = new Node(id, DICE, die);
 			nodes.push_back(dice);
 		}
-		
+
 		void add_word_to_graph(string word, int id){ //add word (letter) nodes to graph
 			Node *letter = new Node(id, WORD, word);
 			nodes.push_back(letter);
 		}
-		
+
 		void add_sink_to_graph(int id){
 			sink = new Node(id, SINK);
 			nodes.push_back(sink);
 		}
 
 		bool BFS(); //breadth first search for Edmonds-Karp
-		
+
 		bool spell_word(); //runs Edmonds-Karp to see if we can spell the word
-		
+
 		void delete_word_from_graph(){ //deletes the word nodes but leaves the dice nodes
 			for(int i = nodes.size()-1; i >=0; i--){ //Search from end of the list to front of the list
 				if(nodes[i]->type == WORD || nodes[i]->type == SINK){
@@ -90,7 +93,7 @@ class Graph{
 			}
 			spellingIds.clear();
 		}
-		
+
 		void print_node_order(){ //print spelling Ids and word
 			if(spell_word()){
 				for(int i = 0; i < spellingIds.size(); i++){
@@ -102,7 +105,7 @@ class Graph{
 				cout << "Cannot spell " << word << endl;
 				//cout << spellingIds.size();
 			}
-	
+
 		}
 		void print_graph(){
 			for(int i = 0; i < nodes.size(); i++){
@@ -134,12 +137,13 @@ void createEdge(Node *n1,Node *n2){
 	edge2->residual=1;
 	n2->adj.push_back(edge2);
 	edge1->to=n2;
-	edge1->from=n1;
-	edge1->reverse=edge2;
-	edge1->original=1;
-	edge1->residual=0;
-	n1->adj.push_back(edge1);
-
+    edge1->from=n1;
+    edge1->reverse=edge2;
+    edge1->original=1;
+    edge1->residual=0;
+n1->adj.push_back(edge1);
+	
+	
 
 
 }
@@ -210,7 +214,7 @@ int main(int argc, char* argv[]){
 		//Do stuff
 		//graph->print_graph();
 		graph->print_node_order();
-		
+
 		//Delete Word
 		graph->delete_word_from_graph();
 	}
@@ -220,80 +224,89 @@ int main(int argc, char* argv[]){
 }
 
 bool Graph::BFS(){
-	
-	list<Node*>queue;
-	
+
+	list<Node *>queue;
+
 
 	//(nodes.backedge).assign(nodes.size(),NULL);	
-		for(int i=0;i<nodes.size();i++){
+	for(int i=0;i<nodes.size();i++){
 		nodes[i]->backedge=NULL;
 		nodes[i]->visited=0;
-		}
+	}
 
 	Node *n =nodes.front();
 	queue.push_back(n);
 
 	while(queue.size()){
-	queue.front();
-	queue.pop_front();
+		n=queue.front();
+		queue.pop_front();
+		if(n==nodes.back()){
+			return true;
+		}
 
 
-	for(int i =0;i<n->adj.size();i++){
-		if(n->adj[i]->to->visited==0 &&n->adj[i]->original==1){
-		n->adj[i]->to->backedge=n->adj[i];
-		n->adj[i]->to->visited=1;
-		queue.push_back(n->adj[i]->to);
+		for(int i =0;i<n->adj.size();i++){
+			if(n->adj[i]->to->visited==0 &&n->adj[i]->original==1){
+
+				n->adj[i]->to->backedge=n->adj[i];
+				n->adj[i]->to->visited=1;
+				queue.push_back(n->adj[i]->to);
 
 
+			}
 		}
 	}
-	}
 
 
 
-if(n==nodes[nodes.size()-1]){
-    return true
-}else{
-return false;
+	return false;
+
+
 }
 
-}
+
+
+
 
 
 bool Graph::spell_word(){
-Node* n;
-//cout << "BFS: " << BFS() << endl; //error testing
-	while(BFS()){
-	n=nodes.back();
-
-	while(n->type!=SOURCE){
-	n->backedge->original=0;
-	n->backedge->residual=1;
-	n->backedge->reverse->original=1;
-	n->backedge->reverse->residual=0;
+	Node* n;
 	
-	n=n->backedge->from;
+	cout << "BFS: " << BFS() << endl; //error testing
+	while(BFS()){
+		n=nodes.back();
+
+		while(n!=nodes.front()){
+			n->backedge->original=0;
+			n->backedge->residual=1;
+			n->backedge->reverse->original=1;
+			n->backedge->reverse->residual=0;
+
+			n=n->backedge->from;
+		}
+
+
 	}
 
+    n=nodes.back();
+    spellingIds.resize(0);
 
-}
-
-n=nodes.back();
-
-for(int i =min_nodes;i<nodes.size()-1;i++){
-	n=nodes[i];
-	for(int j =0;j<n->adj.size();j++){
-		if(n->adj[j]->reverse->residual!=0){
-		if(n->adj[j]->to->type==DICE&&n->adj[j]->original==1){
-			spellingIds.push_back(n->adj[j]->to->id);
-		}
-		}else{
+	for (int i = 0; i < n->adj.size(); i++) {
+		if (n->adj[i]->reverse->residual == 0){
 			return false;
 		}
+	}
+	for(int i =min_nodes;i<nodes.size()-1;i++){
+		n=nodes[i];
+		for(int j =0;j<n->adj.size();j++){
+			        
+
+				if(n->adj[j]->original==1&&n->adj[j]->to->type==DICE){
+					spellingIds.push_back(n->adj[j]->to->id);
+				}
+		}
 
 	}
-
+	return true;
 }
-return true;
-}
-
+ 
