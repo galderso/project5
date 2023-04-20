@@ -291,11 +291,12 @@ bool Graph::spell_word(){
 	spellingIds.clear();
 
 
+
+
 	
 	while(BFS()){//switches original and residual so it doesnt travers the same path
 
-	//cout << "BFS: " << BFS() << endl; //error testing
-	while(BFS()){
+	
 
 		n=nodes.back();
 
@@ -315,7 +316,7 @@ bool Graph::spell_word(){
 
 
 	for(int i = 0; i < n->adj.size(); i++) {
-		if(n->adj[i]->reverse->residual == 0){
+		if(n->adj[i]->reverse->residual != 1){
 			return false;
 		}
 	}
@@ -329,7 +330,7 @@ bool Graph::spell_word(){
 			}
 		}
 		}
-	}
+	
 	return true;
 }
 
