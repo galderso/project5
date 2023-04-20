@@ -84,11 +84,22 @@ class Graph{
 		bool spell_word(); //runs Edmonds-Karp to see if we can spell the word
 
 		void delete_word_from_graph(){ //deletes the word nodes but leaves the dice nodes
-			for(int i = nodes.size()-1; i >=0; i--){ //Search from end of the list to front of the list
+			for(int i = nodes.size()-1; i >=1; i--){ //Search from end of the list to front of the list
 				if(nodes[i]->type == WORD || nodes[i]->type == SINK){
 					nodes[i]->adj.clear();
 					nodes.erase(nodes.begin() + i);
 				}
+				else{
+					nodes[i]->adj.erase(nodes[i]->adj.begin()+1, nodes[i]->adj.end());
+					nodes[i]->visited = 0;
+				}
+			}
+			//reverses effects of BFS for next iteration
+			for(int i = 0; i < nodes[0]->adj.size(); i++){
+				nodes[0]->adj[i]->original = 1;
+				nodes[0]->adj[i]->residual = 0;
+				nodes[0]->adj[i]->reverse->original = 0;
+				nodes[0]->adj[i]->reverse->residual = 1;
 			}
 			spellingIds.clear();
 		}
@@ -96,7 +107,10 @@ class Graph{
 		void print_node_order(){ //print spelling Ids and word
 			if(spell_word()){
 				for(int i = 0; i < spellingIds.size(); i++){
-					cout << spellingIds[i] << ",";
+					cout << spellingIds[i];
+					if(i != spellingIds.size()-1){
+						cout << ",";
+					}
 				}
 				cout << ": " << word << endl;
 			}
@@ -114,8 +128,14 @@ class Graph{
 						content.push_back('A'+j);
 					}
 				}
-				cout <<"Node ID: "<< nodes[i]->id <<" || Content: " << content <<  endl;
+				cout <<"Node ID: "<< nodes[i]->id <<" || Content: " << content << " || Edges to: ";
+				for(int j = 0; j < nodes[i]->adj.size(); j++){
+					cout << nodes[i]->adj[j]->to->id;
+				}
+				cout << endl;
 			}
+	
+
 		}
 };
 
@@ -270,8 +290,13 @@ bool Graph::spell_word(){
 	Node* n;
 	spellingIds.clear();
 
+
 	
 	while(BFS()){//switches original and residual so it doesnt travers the same path
+
+	//cout << "BFS: " << BFS() << endl; //error testing
+	while(BFS()){
+
 		n=nodes.back();
 
 		while(n!=nodes.front()){
@@ -302,6 +327,7 @@ bool Graph::spell_word(){
 					spellingIds.push_back((n->adj[j]->to->id)-1);
 				}
 			}
+		}
 		}
 	}
 	return true;

@@ -1,0 +1,6 @@
+Grant Alderson
+https://github.com/galderso/project5
+The complecity of this algorithm is based mostly off the BFS and spell_word whichI believe is O(VE^2) where V is the number of nodes and E is the number of edges i believe it is E^2 because of the use of back edges. The list holds our queue of nodes that also contains an adjacency list in the class.
+
+
+My contrabutions involve the creation of BFS Spell_word and debuging.
