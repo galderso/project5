@@ -240,12 +240,12 @@ bool Graph::BFS(){
 	while(queue.size()){
 		n=queue.front();
 		queue.pop_front();
-		if(n==nodes.back()){
-			return true;
-		}
-
 
 		for(int i =0;i<n->adj.size();i++){
+	        if(n==nodes.back()){
+            return true;
+        }else{
+
 			if(n->adj[i]->to->visited==0 &&n->adj[i]->original==1){
 
 				n->adj[i]->to->backedge=n->adj[i];
@@ -254,6 +254,7 @@ bool Graph::BFS(){
 
 
 			}
+		}
 		}
 	}
 
@@ -265,12 +266,9 @@ bool Graph::BFS(){
 }
 
 
-
-
-
-
 bool Graph::spell_word(){
 	Node* n;
+    spellingIds.clear();
 	
 	cout << "BFS: " << BFS() << endl; //error testing
 	while(BFS()){
@@ -289,22 +287,23 @@ bool Graph::spell_word(){
 	}
 
     n=nodes.back();
-    spellingIds.resize(0);
 
-	for (int i = 0; i < n->adj.size(); i++) {
-		if (n->adj[i]->reverse->residual == 0){
+
+	for(int i = 0; i < n->adj.size(); i++) {
+		if(n->adj[i]->reverse->residual == 0){
 			return false;
 		}
 	}
 	for(int i =min_nodes;i<nodes.size()-1;i++){
 		n=nodes[i];
 		for(int j =0;j<n->adj.size();j++){
-			        
-
+	         
 				if(n->adj[j]->original==1&&n->adj[j]->to->type==DICE){
-					spellingIds.push_back(n->adj[j]->to->id);
+					spellingIds.push_back((n->adj[j]->to->id)-1);
 				}
-		}
+			 
+			 }
+		
 
 	}
 	return true;
