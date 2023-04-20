@@ -1,6 +1,5 @@
-
-
-#include <queue>
+//By Grant Alderson and Sam Craddock
+//This program uses edmonds carp algrithm to find the correct spelling of words using dice
 #include<list>
 #include <iostream>
 #include <fstream>
@@ -124,7 +123,7 @@ Graph::Graph(){
 	source = new Node(0, SOURCE);
 	nodes.push_back(source);
 }
-
+//creates edges between both nodes
 void createEdge(Node *n1,Node *n2){
 	Edge *edge1 = new Edge();
 	Edge *edge2 = new Edge();
@@ -222,7 +221,8 @@ int main(int argc, char* argv[]){
 
 	return 0;
 }
-
+//finds each path
+//citation:https://www.geeksforgeeks.org/breadth-first-search-or-bfs-for-a-graph/
 bool Graph::BFS(){
 
 	list<Node *>queue;
@@ -265,13 +265,13 @@ bool Graph::BFS(){
 
 }
 
-
+//chcks if word can be spelled and adds ids to spellingIds
 bool Graph::spell_word(){
 	Node* n;
 	spellingIds.clear();
 
-	cout << "BFS: " << BFS() << endl; //error testing
-	while(BFS()){
+	
+	while(BFS()){//switches original and residual so it doesnt travers the same path
 		n=nodes.back();
 
 		while(n!=nodes.front()){
@@ -294,7 +294,7 @@ bool Graph::spell_word(){
 			return false;
 		}
 	}
-	for(int k =min_nodes;k<nodes.size()-1;k++){		
+	for(int k =min_nodes;k<nodes.size()-1;k++){		//adds dice nodes ids to spellingIds
 		n=nodes[k];
 		for(int j =0;j<n->adj.size();j++){
 			if(n->adj[j]->original==1){
