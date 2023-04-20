@@ -294,17 +294,15 @@ bool Graph::spell_word(){
 			return false;
 		}
 	}
-	for(int i =min_nodes;i<nodes.size()-1;i++){
-		n=nodes[i];
+	for(int k =min_nodes;k<nodes.size()-1;k++){		
+		n=nodes[k];
 		for(int j =0;j<n->adj.size();j++){
-	         
-				if(n->adj[j]->original==1&&n->adj[j]->to->type==DICE){
+	         if(n->adj[j]->original==1){
+				if(n->adj[j]->to->type==DICE){
 					spellingIds.push_back((n->adj[j]->to->id)-1);
 				}
-			 
 			 }
-		
-
+			 }
 	}
 	return true;
 }
