@@ -88,10 +88,22 @@ class Graph{
 					nodes.erase(nodes.begin() + i);
 				}
 			}
+			spellingIds.clear();
 		}
 		
-		void print_node_order(string word); //print spelling Ids and word
-		
+		void print_node_order(){ //print spelling Ids and word
+			if(spell_word()){
+				for(int i = 0; i < spellingIds.size(); i++){
+					cout << spellingIds[i] << ",";
+				}
+				cout << ": " << word << endl;
+			}
+			else{
+				cout << "Cannot spell " << word << endl;
+				//cout << spellingIds.size();
+			}
+	
+		}
 		void print_graph(){
 			for(int i = 0; i < nodes.size(); i++){
 				string content = "";
@@ -138,8 +150,6 @@ int main(int argc, char* argv[]){
 	file.open(argv[1]); //dice file
 	int nodeID = 0;
 	while(getline(file, line)){
-		//Node *dice = new Node(nodeID, DICE, line); //TODO: line may need to be something else Im not sure if I totally understand the use of that argument
-		//graph->nodes.push_back(dice);
 		nodeID++;
 		graph->add_dice_to_graph(line, nodeID);
 	}
@@ -163,6 +173,7 @@ int main(int argc, char* argv[]){
 			wordLength++;
 			graph->add_word_to_graph(string() + line[i], nodeID + wordLength);
 		}
+		graph->word = line;
 		graph->add_sink_to_graph(nodeID + wordLength + 1);
 
 		//creates edges between dice and word based on the letters
@@ -197,7 +208,9 @@ int main(int argc, char* argv[]){
 
 		//Nodes are all added
 		//Do stuff
-		graph->print_graph();
+		//graph->print_graph();
+		graph->print_node_order();
+		
 		//Delete Word
 		graph->delete_word_from_graph();
 	}
@@ -250,6 +263,7 @@ return false;
 
 bool Graph::spell_word(){
 Node* n;
+//cout << "BFS: " << BFS() << endl; //error testing
 	while(BFS()){
 	n=nodes.back();
 
@@ -283,6 +297,4 @@ for(int i =min_nodes;i<nodes.size()-1;i++){
 }
 return true;
 }
-//void Graph::delete_word_from_graph(){
-//}
 
