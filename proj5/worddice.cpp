@@ -1,11 +1,12 @@
 //By Grant Alderson and Sam Craddock
 //This program uses edmonds carp algrithm to find the correct spelling of words using dice
+//Citations: Rob's video, Cammile's videos , lab write up
 #include<list>
-#include <iostream>
-#include <fstream>
-#include <string>
-#include <vector>
-#include <map>
+#include<iostream>
+#include<fstream>
+#include<string>
+#include<vector>
+
 
 using namespace std;
 typedef enum{SOURCE, SINK, WORD, DICE} Node_Type;
@@ -144,23 +145,23 @@ Graph::Graph(){
 	nodes.push_back(source);
 }
 //creates edges between both nodes
-void createEdge(Node *n1,Node *n2){
+void createEdge(Node *node1,Node *node2){
 	Edge *edge1 = new Edge();
 	Edge *edge2 = new Edge();
 
 
-	edge2->to=n1;
-	edge2->from=n2;
+	edge2->to=node1;
+	edge2->from=node2;
 	edge2->reverse=edge1;
 	edge2->original=0;
 	edge2->residual=1;
-	n2->adj.push_back(edge2);
-	edge1->to=n2;
-	edge1->from=n1;
+	node2->adj.push_back(edge2);
+	edge1->to=node2;
+	edge1->from=node1;
 	edge1->reverse=edge2;
 	edge1->original=1;
 	edge1->residual=0;
-	n1->adj.push_back(edge1);
+	node1->adj.push_back(edge1);
 
 
 
@@ -179,11 +180,9 @@ int main(int argc, char* argv[]){
 	//creates edges from source to dice
 
 	graph->min_nodes =nodeID+1;
-	Node *n1=graph->nodes.front();
+	Node *node1=graph->nodes.front();
 	for(int i =1;i<graph->min_nodes;i++){
-		Node *n2=graph->nodes[i];
-
-		createEdge(n1,n2);
+		createEdge(node1,graph->nodes[i]);
 
 
 	}
@@ -201,15 +200,11 @@ int main(int argc, char* argv[]){
 
 		//creates edges between dice and word based on the letters
 		for(int i=1;i<graph->min_nodes;i++){
-			Node *n1=graph->nodes[i];
-			for(int k=graph->min_nodes;k<graph->nodes.size()-1;k++){
-				Node *n2=graph->nodes[k];
-				for(int j =0;j<26;j++){
-					if(graph->nodes[k]->letters[j]==true && n1->letters[j]==true){
-						createEdge(n1,graph->nodes[k]);
+			Node *node1=graph->nodes[i];
+			for(int k=graph->min_nodes;k<graph->nodes.size()-1;k++){								for(int j =0;j<26;j++){
+					if(graph->nodes[k]->letters[j]==true && node1->letters[j]==true){
+						createEdge(node1,graph->nodes[k]);
 					}
-
-
 				}
 
 			}
@@ -220,11 +215,9 @@ int main(int argc, char* argv[]){
 
 
 		//creates edges from word to sink
-		Node *n2=graph->nodes.back();
+		Node *node2=graph->nodes.back();
 		for(int i =graph->min_nodes;i<graph->nodes.size()-1;i++){
-			Node *n1=graph->nodes[i];
-
-			createEdge(n1,n2);
+			createEdge(graph->nodes[i],node2);
 
 
 		}
@@ -254,23 +247,23 @@ bool Graph::BFS(){
 		nodes[i]->visited=0;
 	}
 
-	Node *n =nodes.front();
-	queue.push_back(n);
+	Node *node =nodes.front();
+	queue.push_back(node);
 
 	while(queue.size()){
-		n=queue.front();
+		node=queue.front();
 		queue.pop_front();
 
-		for(int i =0;i<n->adj.size();i++){
-			if(n==nodes.back()){
+		for(int i =0;i<node->adj.size();i++){
+			if(node==nodes.back()){
 				return true;
 			}else{
-				if(n->adj[i]->to->visited==0){ 
-					if(n->adj[i]->original==1){
+				if(node->adj[i]->to->visited==0){ 
+					if(node->adj[i]->original==1){
 
-						n->adj[i]->to->backedge=n->adj[i];
-						n->adj[i]->to->visited=1;
-						queue.push_back(n->adj[i]->to);
+						node->adj[i]->to->backedge=node->adj[i];
+						node->adj[i]->to->visited=1;
+						queue.push_back(node->adj[i]->to);
 
 					}
 				}
@@ -287,10 +280,9 @@ bool Graph::BFS(){
 
 //chcks if word can be spelled and adds ids to spellingIds
 bool Graph::spell_word(){
-	Node* n;
+	Node* node;
 	spellingIds.clear();
-
-
+    
 
 
 	
@@ -298,34 +290,34 @@ bool Graph::spell_word(){
 
 	
 
-		n=nodes.back();
+		node=nodes.back();
 
-		while(n!=nodes.front()){
-			n->backedge->original=0;
-			n->backedge->residual=1;
-			n->backedge->reverse->original=1;
-			n->backedge->reverse->residual=0;
+		while(node!=nodes.front()){
+			node->backedge->original=0;
+			node->backedge->residual=1;
+			node->backedge->reverse->original=1;
+			node->backedge->reverse->residual=0;
 
-			n=n->backedge->from;
+			node=node->backedge->from;
 		}
 
 
 	}
 
-	n=nodes.back();
+	node=nodes.back();
 
 
-	for(int i = 0; i < n->adj.size(); i++) {
-		if(n->adj[i]->reverse->residual != 1){
+	for(int i = 0; i < node->adj.size(); i++) {
+		if(node->adj[i]->reverse->residual != 1){
 			return false;
 		}
 	}
 	for(int k =min_nodes;k<nodes.size()-1;k++){		//adds dice nodes ids to spellingIds
-		n=nodes[k];
-		for(int j =0;j<n->adj.size();j++){
-			if(n->adj[j]->original==1){
-				if(n->adj[j]->to->type==DICE){
-					spellingIds.push_back((n->adj[j]->to->id)-1);
+		node=nodes[k];
+		for(int j =0;j<node->adj.size();j++){
+			if(node->adj[j]->original==1){
+				if(node->adj[j]->to->type==DICE){
+					spellingIds.push_back((node->adj[j]->to->id)-1);
 				}
 			}
 		}
